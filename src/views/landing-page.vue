@@ -19,8 +19,8 @@
         <div class="booking_input">
             <input v-model="nameField" placeholder="Name" type="text" ref="nameInput">
             <input v-model="personField" placeholder="Person number" @keyup.enter="save()">
-            <input v-model="timeField" placeholder="Time" type="time" @keyup.enter="save">
-            <input v-model="dateField" placeholder="Date" type="date" @keyup.enter="save">
+            <input v-model="timeField" placeholder="Time" type="time" @keyup.enter="save()">
+            <input v-model="dateField" placeholder="Date" type="date" @keyup.enter="save()">
             <button class="booking_btn" type="button" @click="save()">BOOK A TABLE</button>
         </div>
         <div id="booking_info">
@@ -114,10 +114,10 @@ export default {
                 it => crit.length < 1 ||
                     it.name.toLowerCase().includes(crit.toLowerCase()))
         },
-        loadThings () {
+        loadBookings () {
             const baseUrl = 'http://localhost:8080'
             const email = this.claims.email
-            const endpoint = baseUrl + '/things' + '?owner=' + email
+            const endpoint = baseUrl + '/api/booking' + '?owner=' + email
             const requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
@@ -127,14 +127,14 @@ export default {
             }
             fetch(endpoint, requestOptions)
                 .then(response => response.json())
-                .then(result => result.forEach(thing => {
-                    this.items.push(thing)
+                .then(result => result.forEach(booking => {
+                    this.items.push(booking)
                 }))
                 .catch(error => console.log('error', error))
         },
-        save () {
+        save() {
             const baseUrl = 'http://localhost:8080'
-            const endpoint = baseUrl + '/things'
+            const endpoint = baseUrl + '/api/booking'
             const data = {
                 name: this.nameField,
                 person: this.personField,
@@ -146,7 +146,6 @@ export default {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                    // Authorization: 'Bearer ' + this.accessToken
                 },
                 body: JSON.stringify(data)
             }
@@ -155,8 +154,8 @@ export default {
                 .then(data => {
                     console.log('Success:', data)
                 })
-                .catch(error => console.log('error', error))
-        },
+                .catch(error => console.log('Error:', error))
+    },
         async setup () {
             if (this.$root.authenticated) {
                 this.claims = await this.$auth.getUser()
@@ -166,7 +165,7 @@ export default {
     },
     async created () {
         await this.setup()
-        this.loadThings()
+        this.loadBookings()
     },
     mounted () {
     },
