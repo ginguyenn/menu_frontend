@@ -5,7 +5,7 @@
             <!-- Nav bar-->
             <ul class="nav_bar">
                 <li class="nav_item"><a href="#intro_id">Home</a></li>
-                <li class="nav_item"><a href="src/views/menu.vue">Menu</a></li>
+                <li class="nav_item"><a href="#reservieren_id">Booking Table</a></li>
                 <li class="nav_item"><a href="#aboutus_id">About us</a></li>
                 <li class="nav_item"><a href="#contact_id">Contact</a></li>
             </ul>
@@ -94,7 +94,7 @@
 
 <script>
 export default {
-    name: 'DynamicForm',
+    name: 'BookingTable',
     components: { },
     props: ['title'],
     data () {
