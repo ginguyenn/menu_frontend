@@ -127,11 +127,9 @@ export default {
             axios.post(endpoint, data)
                 .then(response => {
                     console.log('Booking saved:', response.data);
-                    // Thực hiện các thao tác sau khi lưu thành công
                 })
                 .catch(error => {
                     console.error('Error saving booking:', error);
-                    // Xử lý lỗi khi không thể lưu thông tin booking
                 });
         },
     },
