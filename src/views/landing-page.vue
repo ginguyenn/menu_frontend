@@ -18,10 +18,10 @@
     <section id="reservieren_id">
         <div class="booking_input">
             <input v-model="nameField" placeholder="Name" type="text" ref="nameInput">
-            <input v-model="personField" placeholder="Person number" @keyup.enter="save()">
-            <input v-model="timeField" placeholder="Time" type="time" @keyup.enter="save()">
-            <input v-model="dateField" placeholder="Date" type="date" @keyup.enter="save()">
-            <button class="booking_btn" type="button" @click="save()">BOOK A TABLE</button>
+            <input v-model="personField" placeholder="Person number" type="number">
+            <input v-model="timeField" placeholder="Time" type="time">
+            <input v-model="dateField" placeholder="Date" type="date" >
+            <button class="booking_btn" @click="save">BOOK A TABLE</button>
         </div>
         <div id="booking_info">
             <table>
@@ -37,12 +37,12 @@
                 <tr v-for="item in items" :key="item.id">
                     <td>{{item.name}}</td>
                     <td>{{item.person}}</td>
-                    <td>{{items.time}}</td>
+                    <td>{{item.time}}</td>
                     <td>{{item.day}}</td>
                 </tr>
                 <tr>
-                    <td>{{ nameField }}</td>
-                    <td>{{ personField }}</td>
+                    <td>{{nameField}}</td>
+                    <td>{{personField}}</td>
                     <td>{{timeField}}</td>
                     <td>{{dateField}}</td>
                 </tr>
@@ -93,86 +93,51 @@
 </template>
 
 <script>
+import axios from "axios";
+
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
 export default {
     name: 'BookingTable',
-    components: { },
+    components: {},
     props: ['title'],
-    data () {
+    data() {
         return {
             items: [],
             nameField: '',
             personField: '',
-            timeField: ' ',
-            dateField: ' ',
+            timeField: '',
+            dateField: '',
             claims: '',
             accessToken: ''
         }
     },
     methods: {
-        myFilterFunc (crit) {
-            return this.items.filter(
-                it => crit.length < 1 ||
-                    it.name.toLowerCase().includes(crit.toLowerCase()))
-        },
-        loadBookings () {
-            const baseUrl = 'http://localhost:8080'
-            const email = this.claims.email
-            const endpoint = baseUrl + '/api/booking' + '?owner=' + email
-            const requestOptions = {
-                method: 'GET',
-                redirect: 'follow'
-                // headers: {
-                //   Authorization: 'Bearer ' + this.accessToken
-                // }
-            }
-            fetch(endpoint, requestOptions)
-                .then(response => response.json())
-                .then(result => result.forEach(booking => {
-                    this.items.push(booking)
-                }))
-                .catch(error => console.log('error', error))
-        },
         save() {
-            const baseUrl = 'http://localhost:8080'
-            const endpoint = baseUrl + '/api/booking'
+            const baseUrl = 'http://localhost:8080';
+            const endpoint = baseUrl + '/api/booking';
             const data = {
                 name: this.nameField,
                 person: this.personField,
                 time: this.timeField,
                 date: this.dateField,
-                owner: this.claims.email
-            }
-            const requestOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            }
-            fetch(endpoint, requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data)
+            };
+
+            axios.post(endpoint, data)
+                .then(response => {
+                    console.log('Booking saved:', response.data);
+                    // Thực hiện các thao tác sau khi lưu thành công
                 })
-                .catch(error => console.log('Error:', error))
+                .catch(error => {
+                    console.error('Error saving booking:', error);
+                    // Xử lý lỗi khi không thể lưu thông tin booking
+                });
+        },
     },
-        async setup () {
-            if (this.$root.authenticated) {
-                this.claims = await this.$auth.getUser()
-                // this.accessToken = await this.$auth.getAccessToken()
-            }
-        }
-    },
-    async created () {
-        await this.setup()
-        this.loadBookings()
-    },
-    mounted () {
-    },
-    updated () {
-        console.log('UPDATED!')
-    }
 }
+
+
 </script>
 <style scoped>
 /*set color variable*/
