@@ -127,6 +127,12 @@ export default {
             axios.post(endpoint, data)
                 .then(response => {
                     console.log('Booking saved:', response.data);
+                    // Reset fields after successful save
+                    this.nameField = '';
+                    this.personField = '';
+                    this.timeField = '';
+                    this.dateField = '';
+
                 })
                 .catch(error => {
                     console.error('Error saving booking:', error);
